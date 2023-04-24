@@ -1,8 +1,11 @@
+import { Chat } from 'src/chat/entities/chat.entity';
+import { Message } from 'src/chat/entities/message.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserRole } from '../enums/user-role.enum';
@@ -32,4 +35,16 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @OneToMany((type) => Chat, (chat) => chat.user1)
+  chats1: Chat[];
+
+  @OneToMany((type) => Chat, (chat) => chat.user2)
+  chats2: Chat[];
+
+  @OneToMany((type) => Message, (message) => message.sender)
+  messagesSent: Message[];
+
+  @OneToMany((type) => Message, (message) => message.recipient)
+  messagesReceived: Message[];
 }
