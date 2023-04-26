@@ -16,7 +16,7 @@ export class WsChatAuthGuard implements CanActivate {
     const userId = client.handshake.user.userId;
     const id = client.handshake.query.chatId;
     const chatId = +id;
-    console.log(chatId, userId);
+    // console.log(chatId, userId);
 
     const canAccessChat = await this.chatService.userCanAccessChat(
       userId,

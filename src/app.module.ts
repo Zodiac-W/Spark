@@ -34,7 +34,7 @@ import { RealTimeModule } from './real-time/real-time.module';
     RealTimeModule,
   ],
   controllers: [AppController],
-  providers: [AppService, RealTimeGateway],
+  providers: [AppService],
 })
 export class AppModule {
   constructor(

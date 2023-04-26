@@ -93,6 +93,17 @@ export class ChatService {
     return message;
   }
 
+  async getAllMessages(id: number): Promise<any> {
+    const chat = await this.chatRepository.findOne({
+      where: { id },
+      relations: ['message'],
+    });
+
+    const messages = chat.message;
+
+    return messages;
+  }
+
   async getMessageSender(id: number): Promise<any> {
     const message = await this.messageRepository.findOne({
       where: { id },

@@ -10,8 +10,6 @@ export class AccessChat implements CanActivate {
     const userId = request.user.userId;
     const chatId = request.params.id;
 
-    console.log(userId, chatId);
-
     const canAccessChat = await this.chatService.userCanAccessChat(
       userId,
       chatId,

@@ -95,6 +95,24 @@ export class ChatController {
   }
 
   // Message endpoints
+  @ApiOperation({ summary: 'Get All chat messages' })
+  @ApiBearerAuth()
+  @ApiParam({
+    name: 'id',
+    type: 'integer',
+    description: 'The id of the target chat',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The chat messages',
+    type: [CreateMessageDto],
+  })
+  @UseGuards(JwtAuthGuard, AccessChat)
+  @Get(':id/message')
+  getAllMessages(@Param('id', ParseIntPipe) id: number) {
+    return this.chatService.getAllMessages(id);
+  }
+
   @ApiOperation({ summary: 'Get message by id' })
   @ApiBearerAuth()
   @ApiParam({
