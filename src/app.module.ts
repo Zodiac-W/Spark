@@ -10,6 +10,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ChatModule } from './chat/chat.module';
 import { MessageModule } from './message/message.module';
+import { RealTimeGateway } from './real-time/real-time.gateway';
+import { RealTimeModule } from './real-time/real-time.module';
 
 @Module({
   imports: [
@@ -29,9 +31,10 @@ import { MessageModule } from './message/message.module';
     UsersModule,
     ChatModule,
     MessageModule,
+    RealTimeModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, RealTimeGateway],
 })
 export class AppModule {
   constructor(

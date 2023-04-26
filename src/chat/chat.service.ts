@@ -50,7 +50,7 @@ export class ChatService {
   async getChatUsers(id: number): Promise<any> {
     const chat = await this.chatRepository.findOne({
       where: { id },
-      relations: ['user1, user2'],
+      relations: ['user1', 'user2'],
     });
     const users = [chat.user1, chat.user2];
 

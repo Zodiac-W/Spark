@@ -70,7 +70,7 @@ export class ChatController {
     description: 'The chat',
     type: CreateChatDto,
   })
-  @UseGuards(JwtAuthGuard, AccessChat)
+  @UseGuards(JwtAuthGuard)
   @Post('new')
   createChat(@Body() createChatDto: CreateChatDto) {
     return this.chatService.createChat(createChatDto);

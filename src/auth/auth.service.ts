@@ -39,4 +39,9 @@ export class AuthService {
       return null;
     }
   }
+  async validateWs(payload: any): Promise<any> {
+    const token = this.jwtService.verify(payload);
+
+    return token;
+  }
 }

@@ -8,7 +8,9 @@ export class AccessChat implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const userId = request.user.userId;
-    const chatId = request.Param.id;
+    const chatId = request.params.id;
+
+    console.log(userId, chatId);
 
     const canAccessChat = await this.chatService.userCanAccessChat(
       userId,
