@@ -49,7 +49,7 @@ export class RealTimeGateway implements OnModuleInit {
       recipientId,
     };
 
-    // await this.chatService.createMessage(createMessageDto);
+    await this.chatService.createMessage(createMessageDto);
 
     console.log('Z:', createMessageDto);
 

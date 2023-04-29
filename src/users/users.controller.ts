@@ -17,6 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
+import { User } from 'src/decorators/user.decorator';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { UsersService } from './users.service';
@@ -63,6 +64,18 @@ export class UsersController {
   @Get(':id')
   getOneUser(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.getOneUser(id);
+  }
+
+  @ApiOperation({ summary: 'Get all user contacts phone numbers' })
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'The user contacts phone numbers',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get('contacts/all')
+  getAllUserContacts(@User() user: any) {
+    return this.usersService.getAllUserContacts(user.userId);
   }
 
   @UseGuards(JwtAuthGuard)

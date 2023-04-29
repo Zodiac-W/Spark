@@ -109,7 +109,17 @@ export class UsersService {
     const user = await this.userRepository.findOne({
       where: { user_phone: phone },
     });
-
     return user;
+  }
+
+  async getAllUserContacts(id: number): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['contact'],
+    });
+
+    const contact = user.contact;
+
+    return contact;
   }
 }

@@ -1,4 +1,6 @@
+import { Block } from 'src/chat/entities/block.entity';
 import { Chat } from 'src/chat/entities/chat.entity';
+import { Contact } from 'src/chat/entities/contact.entity';
 import { Message } from 'src/chat/entities/message.entity';
 import {
   Column,
@@ -47,4 +49,10 @@ export class User {
 
   @OneToMany((type) => Message, (message) => message.recipient)
   messagesReceived: Message[];
+
+  @OneToMany((type) => Contact, (contact) => contact.user)
+  contact: Contact[];
+
+  @OneToMany((type) => Block, (block) => block.user)
+  block: Block[];
 }

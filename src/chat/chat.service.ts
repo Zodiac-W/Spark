@@ -6,6 +6,8 @@ import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { CreateChatDto } from './dto/create-chat-dto';
 import { Chat } from './entities/chat.entity';
+import { Contact } from './entities/contact.entity';
+import { Block } from './entities/block.entity';
 
 @Injectable()
 export class ChatService {
@@ -15,6 +17,10 @@ export class ChatService {
     private usersService: UsersService,
     @InjectRepository(Message)
     private messageRepository: Repository<Message>,
+    @InjectRepository(Contact)
+    private contactReposiroty: Repository<Contact>,
+    @InjectRepository(Block)
+    private blockRepository: Repository<Block>,
   ) {}
 
   async createChat(createChatDto: CreateChatDto): Promise<any> {
@@ -37,6 +43,19 @@ export class ChatService {
     const chat = await this.chatRepository.findOne({ where: { id } });
 
     return chat;
+  }
+
+  async getUserChats(id: number): Promise<any> {
+    const chats1 = await this.chatRepository.find({
+      where: { user1: { id } },
+    });
+    const chats2 = await this.chatRepository.find({
+      where: { user2: { id } },
+    });
+
+    const chats = [...chats1, ...chats2];
+
+    return chats;
   }
 
   async deleteChat(id: number): Promise<any> {
@@ -96,12 +115,45 @@ export class ChatService {
   async getAllMessages(id: number): Promise<any> {
     const chat = await this.chatRepository.findOne({
       where: { id },
-      relations: ['message'],
+      relations: ['message', 'message.sender', 'message.recipient'],
     });
 
     const messages = chat.message;
 
     return messages;
+  }
+
+  async getMessagesType(userId: number, chatId: number): Promise<any> {
+    const messages = await this.getAllMessages(chatId);
+
+    const sent = [];
+    const recieved = [];
+    console.log('1');
+    messages.forEach((message) => {
+      if (message.sender.id == userId) {
+        sent.push(message);
+      } else if (message.recipient.id == userId) {
+        recieved.push(message);
+      }
+    });
+
+    return { sent, recieved };
+  }
+
+  async getSentMessages(userId: number, chatId: number): Promise<any> {
+    const messages = await this.getMessagesType(userId, chatId);
+
+    const sent = messages.sent;
+
+    return sent;
+  }
+
+  async getRecievedMessages(userId: number, chatId: number): Promise<any> {
+    const messages = await this.getMessagesType(userId, chatId);
+
+    const recieved = messages.recieved;
+
+    return recieved;
   }
 
   async getMessageSender(id: number): Promise<any> {
@@ -130,5 +182,85 @@ export class ChatService {
     await this.messageRepository.softDelete(id);
 
     return message;
+  }
+
+  async addToContactList(id: number, phone: string): Promise<any> {
+    const user = await this.usersService.getOneUser(id);
+    const contact = await this.usersService.getUserByPhone(phone);
+
+    const newContact = new Contact();
+    newContact.contact_phone_numnber = phone;
+    newContact.user = user;
+    newContact.contact = contact;
+
+    await this.contactReposiroty.save(newContact);
+
+    return newContact;
+  }
+
+  async getUserContact(id: number): Promise<any> {
+    const contacts = await this.contactReposiroty.find({
+      where: { user: { id } },
+      relations: ['contact'],
+    });
+
+    return contacts;
+  }
+
+  async usersSentMessage(userId: number, messId: number): Promise<any> {
+    const message = await this.messageRepository.findOne({
+      where: { id: messId },
+      relations: ['sender'],
+    });
+    if (userId == message.sender.id) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async addToBlockList(userId: number, blockedId: number): Promise<any> {
+    const user = await this.usersService.getOneUser(userId);
+    const blockedUser = await this.usersService.getOneUser(blockedId);
+
+    const block = new Block();
+    block.user = user;
+    block.blocked = blockedUser;
+
+    await this.blockRepository.save(block);
+
+    return block;
+  }
+
+  async getUserBlockList(id: number): Promise<any> {
+    const blocked = await this.blockRepository.find({
+      where: { user: { id } },
+      relations: ['blocked'],
+    });
+    return blocked;
+  }
+
+  async unblockUser(userId: number, blockedId: number): Promise<any> {
+    const blocked = await this.blockRepository.findOne({
+      where: { user: { id: userId }, blocked: { id: blockedId } },
+    });
+    const deleted = blocked;
+
+    await this.blockRepository.softDelete(blocked.id);
+
+    return deleted;
+  }
+
+  async isBlocked(senderId: number, recipientId: number): Promise<any> {
+    const blockList = await this.getUserBlockList(recipientId);
+
+    const isBlocked = blockList.find((user: any) => {
+      return user.blocked.id == senderId;
+    });
+    if (isBlocked) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }
